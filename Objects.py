@@ -4,15 +4,25 @@ from math import inf, sqrt
 
 #Esfera - Centro e raio
 class Sphere:
-    def __init__(self, center, radius):
+    def __init__(self, center, radius, ka, kd, ks, exp):
         self.center = np.array(center)
         self.radius = radius
+        self.ka = ka
+        self.kd = kd
+        self.ks = ks
+        self.exp = exp
 
     def coloring(self, RGB_color):
         self.color = np.array(RGB_color)
 
     def getColor(self):
         return self.color
+    
+    def getNormal(self, P):
+        normal_vector = np.array(P - self.center) 
+        normal_vector = ( normal_vector/ np.linalg.norm(normal_vector))
+        return normal_vector
+
 
     def raysphere_intersect(center, radius, ray_origin, ray_direction):
         I = center - ray_origin
@@ -42,9 +52,13 @@ class Sphere:
 class Plane:
     
     
-    def __init__(self, normal_vector, P_point):
+    def __init__(self, normal_vector, P_point, ka, kd, ks, exp):
         self.normal_vector = np.array(normal_vector)
         self.P_point = np.array(P_point)
+        self.ka = ka
+        self.kd = kd
+        self.ks = ks
+        self.exp = exp
     
     def coloring(self, RGB_color):
         self.color = np.array(RGB_color)
@@ -73,10 +87,14 @@ class Plane:
 #Triangulo - 3 pontos
 
 class Triangle:
-    def __init__(self, A_point, B_point, C_point):
+    def __init__(self, A_point, B_point, C_point, ka, kd, ks, exp):
         self.A_point = np.array(A_point)
         self.B_point = np.array(B_point)
         self.C_point = np.array(C_point)
+        self.ka = ka
+        self.kd = kd
+        self.ks = ks
+        self.exp = exp
     
     def coloring(self, RGB_color):
         self.color = np.array(RGB_color)
