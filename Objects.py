@@ -65,9 +65,14 @@ class Plane:
 
     def getColor(self):
         return self.color
+    
+    def getNormal(self, P):
+        
+        return self.normal_vector
 
     def rayplane_intersect(normal_vector, P_point, ray_origin, ray_direction, epsilon = 1e-6, infinito = inf ):
         v = np.dot(ray_direction, normal_vector)
+
 	
         if abs(v) > epsilon:
 
@@ -101,6 +106,13 @@ class Triangle:
     
     def getColor(self):
         return self.color
+    
+    def getNormal(self,P):
+        AB = self.B_point - self.A_point
+        AC = self.C_point - self.A_point
+        normal_vector = np.cross(AB,AC) 
+        normal_vector = ( normal_vector/ np.linalg.norm(normal_vector))
+        return normal_vector
 
 
     def raytriangle_intersect(A_point, B_point, C_point, ray_origin, ray_direction):
@@ -108,6 +120,10 @@ class Triangle:
         
         u = np.array(B_point - A_point)
         v = np.array(C_point - A_point)
+        n = np.cross(u,v)
+        n_ = n/ np.linalg.norm(n)
+
+        t = Plane.rayplane_intersect(n_, A_point, ray_origin, ray_direction, epsilon = 1e-6, infinito = inf)
 
         projuv = (np.dot(u,v)/np.dot(v,v)) * v
         projvu = (np.dot(v,u)/np.dot(u,u)) * u
@@ -117,28 +133,25 @@ class Triangle:
         hb = hb/(np.dot(hb,hb))
         hc = hc/(np.dot(hc,hc))
 
-        n = np.cross(u,v)
-        n_ = n/ np.linalg.norm(n)
-        t = Plane.rayplane_intersect(n_, A_point, ray_origin, ray_direction, epsilon = 1e-6, infinito = inf)
-        
-        P_point = ray_origin + t * ray_direction
+       
+        if t  < inf:
+            P_point = ray_origin + t * ray_direction
 
-        AP = P_point - A_point
+            AP = P_point - A_point
 
-        beta = np.dot(AP, hb)
-        gama =  np.dot(AP, hc)
-        alpha = 1 - (beta + gama)
+            beta = np.dot(AP, hb)
+            gama =  np.dot(AP, hc)
+            alpha = 1 - (beta + gama)
+
+            if alpha < 0 or beta < 0 or gama < 0:
+                #print('intersect')
+                t = inf
+        return t
         
         #print('alpha: ' + str(alpha))
         #print('beta: ' + str(beta))
         #print('gama: ' + str(gama))
-
-        if (0 <= alpha <= 1) and (0 <= beta <= 1) and  (0 <= gama <= 1):
-            #print('intersect')
-            return t
-        else:
-            #print('opa')
-            return  
+ 
 
         """
         AB = B_point - A_point               # Oriented segment A to B
