@@ -14,12 +14,14 @@ if __name__ == "__main__":
     L_x, L_y, L_z = readline(float)
     UP_x, UP_y, UP_z = readline(float)
     BC_R, BC_G, BC_B = readline(int)
+    max_depth = int(input())
     qtd_obj = int(input())
     ###################################
     E_point = np.array([E_x, E_y, E_z])
     L_point = np.array([L_x, L_y, L_z])
     up_vector = np.array([UP_x, UP_y, UP_z])
     BC_RGB = np.array([BC_R, BC_G, BC_B])
+   
 
     objects = []
 
@@ -43,6 +45,9 @@ if __name__ == "__main__":
             kd = float(color_coeficients_plane[4])
             ks = float(color_coeficients_plane[5])
             exp = float(color_coeficients_plane[6])
+            kr = float(color_coeficients_plane[7])
+            kt = float(color_coeficients_plane[8])
+            refraction_index = float(color_coeficients_plane[9])
             
 
             P_point_x = float(plane_definition[0])
@@ -52,7 +57,7 @@ if __name__ == "__main__":
             N_vector_y = float(plane_definition[4])
             N_vector_z = float(plane_definition[5])
 
-            plane = Plane([N_vector_x, N_vector_y, N_vector_z], [P_point_x, P_point_y, P_point_z], ka, kd, ks, exp)
+            plane = Plane([N_vector_x, N_vector_y, N_vector_z], [P_point_x, P_point_y, P_point_z], ka, kd, ks, exp, kr, kt, refraction_index)
             plane.coloring([Cd_R_plane/255, Cd_G_plane/255, Cd_B_plane/255])
             print(f'Cd_RGB: {Cd_R_plane, Cd_G_plane, Cd_B_plane}')
             objects.append(plane)
@@ -76,6 +81,9 @@ if __name__ == "__main__":
             kd = float(color_coeficients_sphere[4])
             ks = float(color_coeficients_sphere[5])
             exp = float(color_coeficients_sphere[6])
+            kr = float(color_coeficients_sphere[7])
+            kt = float(color_coeficients_sphere[8])
+            refraction_index = float(color_coeficients_sphere[9])
 
             #print(f'ka, kd, ks, exp: {ka, kd, ks, exp}')
 
@@ -87,7 +95,7 @@ if __name__ == "__main__":
             #print(f'Center: {[C_point_x, C_point_y , C_point_z]}')
             #print(f'Radius: {radius}')
 
-            sphere = Sphere([C_point_x, C_point_y , C_point_z], radius, ka, kd, ks, exp)
+            sphere = Sphere([C_point_x, C_point_y , C_point_z], radius, ka, kd, ks, exp, kr, kt, refraction_index)
             sphere.coloring([Cd_R_sphere/255, Cd_G_sphere/255, Cd_B_sphere/255])
             objects.append(sphere)
 
@@ -105,6 +113,9 @@ if __name__ == "__main__":
             kd = float(color_coeficients_triangle[4])
             ks = float(color_coeficients_triangle[5])
             exp = float(color_coeficients_triangle[6])
+            kr = float(color_coeficients_triangle[7])
+            kt = float(color_coeficients_triangle[8])
+            refraction_index = float(color_coeficients_triangle[9])
             
             
             A_point_x = float(triangle_definition[0])
@@ -121,7 +132,7 @@ if __name__ == "__main__":
             #print('A: ' + str([A_point_x, A_point_y, A_point_z]) + ' B: '+ str([B_point_x, B_point_y, B_point_z]) + ' C: ' +  str([C_point_x, C_point_y, C_point_z]))
 
 
-            triangle = Triangle([A_point_x, A_point_y, A_point_z], [B_point_x, B_point_y, B_point_z], [C_point_x, C_point_y, C_point_z], ka, kd, ks, exp)
+            triangle = Triangle([A_point_x, A_point_y, A_point_z], [B_point_x, B_point_y, B_point_z], [C_point_x, C_point_y, C_point_z], ka, kd, ks, exp, kr, kt, refraction_index)
             #print([R_triangle, G_triangle, B_triangle])
             triangle.coloring([Cd_R_triangle/255, Cd_G_triangle/255, Cd_B_triangle/255])
 
@@ -138,5 +149,5 @@ if __name__ == "__main__":
          #print([I_R, I_G, I_B])
          lights.append((np.array((c_R/255, c_G/255, c_B/255)), np.array((L_x, L_y, L_z))))
 
-    image = image(objects, E_point, L_point, up_vector, BC_RGB, height, width, d, s, Ca, lights)
+    image = image(objects, E_point, L_point, up_vector, BC_RGB, height, width, d, s, Ca, lights, max_depth)
     plt.imsave("./image.png", image)

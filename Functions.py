@@ -1,4 +1,4 @@
-from math import inf
+from math import inf,sqrt
 import numpy as np
 from Objects import Plane, Sphere, Triangle
 from main import *
@@ -78,17 +78,46 @@ def phong(objects, nearest_object, intersection_point, Ca, lights, w0_vector, no
                 Cp += ks * (np.dot(w0_vector, r_vector) ** q) * c
     #print(Cp)
     return Cp
+
+def refract(nearest_object,w0_vector, normal_vector):
+    costheta = np.dot(normal_vector, w0_vector)
+    refraction_index = nearest_object.refraction_index
+    if costheta < 0:
+        normal_vector = -normal_vector
+        refraction_index = 1/refraction_index
+        costheta = -costheta
+    delta = 1 - (1/(refraction_index**2))*(1-costheta**2)
+    if delta < 0:
+        return
+    
+    return - ((1/refraction_index) * w0_vector) - (sqrt(delta) - (1/refraction_index)*costheta)*normal_vector
     
 
 
-def cast(objects, ray_origin, ray_direction, background_color, Ca, lights):
+def cast(objects, ray_origin, ray_direction, background_color, Ca, lights, ttl):
     color = background_color
     tmin,nearest_object = trace(objects, ray_origin, ray_direction)
     if nearest_object:
+        kt = nearest_object.kt
+        kr = nearest_object.kr
         intersection_point = ray_origin + (tmin * ray_direction)
         w0_vector = -ray_direction
         normal_vector = nearest_object.getNormal(intersection_point)
-        color = phong(objects, nearest_object, intersection_point, Ca, lights, w0_vector, normal_vector) 
+        color = phong(objects, nearest_object, intersection_point, Ca, lights, w0_vector, normal_vector)
+        if ttl > 0:
+            r = reflect(w0_vector, normal_vector)
+            shift_intersection_point_r = intersection_point + 10e-5  * r
+            try:
+                if kt > 0:
+                    t = refract(nearest_object, w0_vector, normal_vector)
+                    shift_intersection_point_t = intersection_point + 10e-5 * t
+                    color += kt * cast(objects, shift_intersection_point_t, t, background_color, Ca, lights, ttl -1)
+                if kr >0:
+                    color += kr * cast(objects, shift_intersection_point_r, r, background_color, Ca, lights, ttl -1)
+            except:
+                color += cast(objects, shift_intersection_point_r, r, background_color, Ca, lights, ttl-1)
+
+
     #print(color)
     #print(nearest_object)      
     return color
@@ -97,7 +126,7 @@ def cast(objects, ray_origin, ray_direction, background_color, Ca, lights):
 
 
 
-def image(objects, E_point, L_point, up_vector, BC_RGB, height, width, d, s, Ca, lights):
+def image(objects, E_point, L_point, up_vector, BC_RGB, height, width, d, s, Ca, lights, max_depth):
     #Vetores w/ u/ up_vector
     w_vector = normalize(np.array(E_point - L_point))
     u_vector = normalize(np.cross(up_vector, w_vector))
@@ -125,7 +154,7 @@ def image(objects, E_point, L_point, up_vector, BC_RGB, height, width, d, s, Ca,
             #Cálculo do Qij
             Q_matrix[i,j] = Q_matrix[0,0] + (pixel_side * j * u_vector) - (pixel_side * i * v_vector)
             ray_direction = normalize(Q_matrix[i, j] - E_point)
-            aux = cast(objects, E_point, ray_direction, BC_RGB, Ca, lights)
+            aux = cast(objects, E_point, ray_direction, BC_RGB, Ca, lights, max_depth)
             aux = aux/max(*aux,1)
             #print(c[i,j,0])
             #aux = aux/max(*aux, 1)

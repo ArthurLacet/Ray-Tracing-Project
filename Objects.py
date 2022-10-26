@@ -4,13 +4,16 @@ from math import inf, sqrt
 
 #Esfera - Centro e raio
 class Sphere:
-    def __init__(self, center, radius, ka, kd, ks, exp):
+    def __init__(self, center, radius, ka, kd, ks, exp, kr, kt, refraction_index):
         self.center = np.array(center)
         self.radius = radius
         self.ka = ka
         self.kd = kd
         self.ks = ks
         self.exp = exp
+        self.kr = kr
+        self.kt = kt
+        self.refraction_index = refraction_index
 
     def coloring(self, RGB_color):
         self.color = np.array(RGB_color)
@@ -52,13 +55,16 @@ class Sphere:
 class Plane:
     
     
-    def __init__(self, normal_vector, P_point, ka, kd, ks, exp):
+    def __init__(self, normal_vector, P_point, ka, kd, ks, exp, kr, kt, refraction_index):
         self.normal_vector = np.array(normal_vector)
         self.P_point = np.array(P_point)
         self.ka = ka
         self.kd = kd
         self.ks = ks
         self.exp = exp
+        self.kr = kr
+        self.kt = kt
+        self.refraction_index = refraction_index
     
     def coloring(self, RGB_color):
         self.color = np.array(RGB_color)
@@ -67,7 +73,7 @@ class Plane:
         return self.color
     
     def getNormal(self, P):
-        
+
         return self.normal_vector
 
     def rayplane_intersect(normal_vector, P_point, ray_origin, ray_direction, epsilon = 1e-6, infinito = inf ):
@@ -92,7 +98,7 @@ class Plane:
 #Triangulo - 3 pontos
 
 class Triangle:
-    def __init__(self, A_point, B_point, C_point, ka, kd, ks, exp):
+    def __init__(self, A_point, B_point, C_point, ka, kd, ks, exp, kr, kt, refraction_index):
         self.A_point = np.array(A_point)
         self.B_point = np.array(B_point)
         self.C_point = np.array(C_point)
@@ -100,6 +106,9 @@ class Triangle:
         self.kd = kd
         self.ks = ks
         self.exp = exp
+        self.kr = kr
+        self.kt = kt
+        self.refraction_index = refraction_index
     
     def coloring(self, RGB_color):
         self.color = np.array(RGB_color)
