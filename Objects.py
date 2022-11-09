@@ -1,12 +1,15 @@
 import numpy as np
 from math import inf, sqrt
+
 #Objetos
 
-#Esfera - Centro e raio
+#Esfera - Centro e raio 
+
 class Sphere:
     def __init__(self, center, radius, ka, kd, ks, exp, kr, kt, refraction_index):
         self.center = np.array(center)
         self.radius = radius
+        #Coeficientes
         self.ka = ka
         self.kd = kd
         self.ks = ks
@@ -21,6 +24,7 @@ class Sphere:
     def getColor(self):
         return self.color
     
+    #Calcula a normal para ajudar a pegar a interseção
     def getNormal(self, P):
         normal_vector = np.array(P - self.center) 
         normal_vector = ( normal_vector/ np.linalg.norm(normal_vector))
@@ -52,12 +56,12 @@ class Sphere:
 
 
 #Plano - Vetor normal e ponto contido no plano
+
 class Plane:
-    
-    
     def __init__(self, normal_vector, P_point, ka, kd, ks, exp, kr, kt, refraction_index):
         self.normal_vector = np.array(normal_vector)
         self.P_point = np.array(P_point)
+        #Coeficientes
         self.ka = ka
         self.kd = kd
         self.ks = ks
@@ -73,7 +77,6 @@ class Plane:
         return self.color
     
     def getNormal(self, P):
-
         return self.normal_vector
 
     def rayplane_intersect(normal_vector, P_point, ray_origin, ray_direction, epsilon = 1e-6, infinito = inf ):
@@ -92,6 +95,7 @@ class Plane:
             t = infinito
 
         return t
+
     def __str__(self):
         return "Plane"
     
@@ -102,6 +106,7 @@ class Triangle:
         self.A_point = np.array(A_point)
         self.B_point = np.array(B_point)
         self.C_point = np.array(C_point)
+        #Coeficientes
         self.ka = ka
         self.kd = kd
         self.ks = ks
@@ -125,8 +130,7 @@ class Triangle:
 
 
     def raytriangle_intersect(A_point, B_point, C_point, ray_origin, ray_direction):
-        #Pré processamento
-        
+        #Pré processamento        
         u = np.array(B_point - A_point)
         v = np.array(C_point - A_point)
         n = np.cross(u,v)
@@ -141,7 +145,8 @@ class Triangle:
         hc = v - projvu
         hb = hb/(np.dot(hb,hb))
         hc = hc/(np.dot(hc,hc))
-
+        
+        #Cálculo da interseção
        
         if t  < inf:
             P_point = ray_origin + t * ray_direction
@@ -153,38 +158,8 @@ class Triangle:
             alpha = 1 - (beta + gama)
 
             if alpha < 0 or beta < 0 or gama < 0:
-                #print('intersect')
                 t = inf
         return t
-        
-        #print('alpha: ' + str(alpha))
-        #print('beta: ' + str(beta))
-        #print('gama: ' + str(gama))
- 
-
-        """
-        AB = B_point - A_point               # Oriented segment A to B
-        AC = C_point - A_point               # Oriented segment A to C
-        ray_direction_ = ray_direction/np.linalg.norm(ray_direction)
-        n = np.cross(AB, AC)     # Normal vector
-        n_ = n/np.linalg.norm(n) # Normalized normal
-        # Using the point A to find d
-        d = - np.dot(n_, A_point)
-        # Finding parameter t
-        t = - (np.dot(n_, ray_origin) + d)/np.dot(n_, ray_direction_)
-        # Finding P
-        P = ray_origin + t * ray_direction_
-        # Get the resulting vector for each vertex
-        # following the construction order
-        Pa = np.dot(np.cross(B_point - A_point, P - A_point), n_)
-        Pb = np.dot(np.cross(C_point - B_point, P - B_point), n_)
-        Pc = np.dot(np.cross(A_point - C_point, P - C_point), n_)
-        if(t < 0):
-            return
-        elif(Pa < 0 and Pb < 0 and Pc < 0):
-            return 
-        else:
-            return t """
     
     def __str__(self):
         return "Triangle"
