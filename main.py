@@ -3,6 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from Objects import Plane, Sphere, Triangle
 from Functions import *
+import random
 
 def readline(Type): return map(Type, input().split())
 
